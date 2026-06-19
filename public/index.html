@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>PULSE SELECT · Acesso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060608;--surface:#0c0c10;--surface2:#12121a;--red:#ff173d;--text:#f4f4f7;--muted:#85859a;--border:rgba(255,255,255,.12);--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 18% 12%,rgba(255,23,61,.24),transparent 34%),radial-gradient(circle at 78% 70%,rgba(255,255,255,.07),transparent 32%),linear-gradient(135deg,#020203,#08080d 55%,#120307);color:var(--text);font-family:var(--font);overflow:hidden}
+body:before{content:'';position:fixed;inset:0;background-image:linear-gradient(to right,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.035) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(circle at center,#000,transparent 75%);pointer-events:none}
+.card{position:relative;width:min(460px,100%);padding:32px;border:1px solid rgba(255,23,61,.42);border-radius:28px;background:linear-gradient(160deg,rgba(12,12,16,.95),rgba(5,5,8,.9));box-shadow:0 35px 90px rgba(0,0,0,.72),0 0 60px rgba(255,23,61,.14),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(22px);animation:enter .7s cubic-bezier(.16,1,.3,1) both}
+.card:before{content:'';position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--red),#fff,transparent)}
+@keyframes enter{from{opacity:0;transform:translateY(24px) scale(.98);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.logo{width:96px;height:96px;margin:0 auto 18px;border-radius:50%;background:url('https://i.postimg.cc/FK9gwFLx/Chat-GPT-Image-18-de-jun-de-2026-00-23-43.png') center/cover;border:1px solid rgba(255,255,255,.4);box-shadow:0 0 35px rgba(255,23,61,.28)}
+h1{text-align:center;font-size:clamp(32px,8vw,48px);font-weight:800;letter-spacing:-2px;line-height:.95;text-transform:uppercase}h1 span{color:var(--red);text-shadow:0 0 28px rgba(255,23,61,.55)}
+.sub{text-align:center;margin:12px 0 25px;font:500 10px var(--mono);letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+label{display:block;margin:0 0 7px;font:600 11px var(--mono);letter-spacing:1px;text-transform:uppercase;color:#a0a0b4}
+.field{position:relative}input{width:100%;height:50px;padding:0 54px 0 15px;border:1px solid rgba(255,23,61,.72);border-radius:13px;background:var(--surface2);color:var(--text);font:500 14px var(--font);outline:2px solid transparent;outline-offset:2px;transition:.2s}input:focus{border-color:var(--red);outline-color:#fff;box-shadow:0 0 0 4px rgba(255,23,61,.12)}input:disabled{opacity:.55}
+.eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#fff;font-size:20px;line-height:1;padding:7px;cursor:pointer;box-shadow:none}.eye:hover{transform:translateY(-50%) scale(1.08);filter:drop-shadow(0 0 8px rgba(255,23,61,.7))}.eye[hidden]{display:none}
+.submit{display:block;min-width:110px;margin:20px auto 0;padding:12px 24px;border:0;border-radius:12px;background:var(--red);color:#fff;font:800 14px var(--font);cursor:pointer;box-shadow:0 0 24px rgba(255,23,61,.33);transition:.2s}.submit:hover{transform:translateY(-1px);box-shadow:0 0 34px rgba(255,23,61,.5)}.submit:disabled{cursor:not-allowed;opacity:.6;transform:none}
+.message{min-height:20px;margin-top:14px;text-align:center;color:#d9d9e3;font-size:12px;line-height:1.45}.message.error{color:#ff8aa0}.message.success{color:#86efac}
+</style>
+</head>
+<body>
+<main class="card" aria-labelledby="title">
+  <div class="logo" aria-hidden="true"></div>
+  <h1 id="title"><span>PULSE</span> SELECT</h1>
+  <p class="sub">CRM PREMIUM · ACESSO PROTEGIDO</p>
+  <form id="loginForm" novalidate>
+    <label id="accessLabel" for="accessInput">Senha de acesso</label>
+    <div class="field">
+      <input id="accessInput" type="password" autocomplete="current-password" maxlength="120" placeholder="Digite a senha" required>
+      <button id="eyeButton" class="eye" type="button" aria-label="Mostrar senha" title="Mostrar senha">🙈</button>
+    </div>
+    <button id="submitButton" class="submit" type="submit">Entrar</button>
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+  </form>
+</main>
+<script>
+(() => {
+  'use strict';
+  const form=document.getElementById('loginForm');
+  const input=document.getElementById('accessInput');
+  const label=document.getElementById('accessLabel');
+  const eye=document.getElementById('eyeButton');
+  const submit=document.getElementById('submitButton');
+  const message=document.getElementById('message');
+  let step='password';
+
+  const setMessage=(text,type='')=>{message.textContent=text;message.className='message'+(type?' '+type:'')};
+  const setStep=(next)=>{
+    step=next; input.value=''; input.disabled=false;
+    if(next==='birthday'){
+      label.textContent='Aniversário do filho'; input.type='text'; input.autocomplete='off'; input.inputMode='numeric'; input.placeholder='DD/MM/AAAA'; eye.hidden=true;
+    }else if(next==='grandma'){
+      label.textContent='1º nome da sua avó'; input.type='text'; input.autocomplete='off'; input.inputMode='text'; input.placeholder='Digite o primeiro nome'; eye.hidden=true;
+    }else{
+      label.textContent='Senha de acesso'; input.type='password'; input.autocomplete='current-password'; input.inputMode='text'; input.placeholder='Digite a senha'; eye.hidden=false; eye.textContent='🙈';
+    }
+    input.focus();
+  };
+
+  eye.addEventListener('click',()=>{
+    const show=input.type==='password'; input.type=show?'text':'password'; eye.textContent=show?'👁':'🙈';
+    eye.setAttribute('aria-label',show?'Ocultar senha':'Mostrar senha'); eye.title=show?'Ocultar senha':'Mostrar senha'; input.focus();
+  });
+
+  form.addEventListener('submit',async(event)=>{
+    event.preventDefault();
+    const value=input.value;
+    if(!value.trim()){setMessage('Preencha o campo para continuar.','error');return;}
+    submit.disabled=true; input.disabled=true; setMessage('Verificando...');
+    try{
+      const endpoint=step==='password'?'/api/login':'/api/recover';
+      const response=await fetch(endpoint,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({value})});
+      const data=await response.json().catch(()=>({}));
+      if(response.ok&&data.authenticated){setMessage('Acesso autorizado.','success');window.location.replace('/app');return;}
+      if(data.next==='birthday'){setMessage('Senha incorreta. Confirme a pergunta de segurança.','error');setStep('birthday');return;}
+      if(data.next==='grandma'){setMessage('Data incorreta. Última pergunta de segurança.','error');setStep('grandma');return;}
+      setMessage(data.message||'Acesso negado. Tente novamente mais tarde.','error');
+      if(data.locked){input.disabled=true;submit.disabled=true;return;}
+    }catch(_){setMessage('Não foi possível conectar ao servidor.','error');}
+    finally{if(!input.disabled){submit.disabled=false}else if(step!=='grandma'){input.disabled=false;submit.disabled=false} if(!submit.disabled) input.focus();}
+  });
+
+  fetch('/api/session',{credentials:'same-origin',headers:{'Accept':'application/json'}})
+    .then(r=>r.ok?r.json():null).then(data=>{if(data&&data.authenticated)window.location.replace('/app')}).catch(()=>{});
+})();
+</script>
+</body>
+</html>
