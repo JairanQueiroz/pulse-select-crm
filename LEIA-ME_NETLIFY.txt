@@ -1,0 +1,35 @@
+PULSE SELECT CRM — AUTENTICAÇÃO SEGURA NA NETLIFY
+
+O QUE MUDOU
+- A senha, a data de recuperação e o nome da avó não ficam no HTML, JavaScript público ou netlify.toml.
+- A validação ocorre em Netlify Functions.
+- O CRM fica em private/crm.html, fora da pasta public, e só é servido pela função /app após validar um cookie HttpOnly assinado.
+- A sessão usa cookie HttpOnly, SameSite=Strict, Secure em HTTPS e expira em 8 horas.
+- Login e recuperação têm limitação de tentativas por IP/domínio.
+
+COMO PUBLICAR
+1. Suba a pasta completa em um repositório Git e importe o projeto na Netlify, ou use Netlify CLI com build. Não publique apenas a pasta public.
+2. No painel da Netlify, abra Project configuration > Environment variables.
+3. Crie estas quatro variáveis com escopo Functions (ou todos os escopos):
+   PULSE_ACCESS_PASSWORD
+   PULSE_CHILD_BIRTHDAY
+   PULSE_GRANDMA_NAME
+   PULSE_SESSION_SECRET
+4. Preencha as três primeiras com os valores definidos por você.
+5. Gere PULSE_SESSION_SECRET com pelo menos 32 caracteres aleatórios. Exemplo no terminal:
+   node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+6. Faça um novo deploy depois de salvar as variáveis.
+
+TESTE
+- Abra a URL principal.
+- Senha correta: entra no CRM.
+- Senha errada: pergunta a data.
+- Data correta: entra.
+- Data errada: pergunta o nome da avó.
+- Nome correto: entra.
+- Clique em Sair: a sessão é apagada e volta ao login.
+
+IMPORTANTE
+- Não coloque os valores reais no .env.example, no netlify.toml ou no Git.
+- Use somente este novo projeto no deploy. Os HTMLs antigos contêm a autenticação local e não devem ser publicados.
+- O botão de exportar “CRM com dados” cria um arquivo local de backup; guarde esse arquivo em local privado.
