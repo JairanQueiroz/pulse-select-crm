@@ -135,8 +135,6 @@ label{display:block;margin:0 0 7px;font:600 11px var(--mono);letter-spacing:1px;
     finally{if(!input.disabled){submit.disabled=false}else if(step!=='grandma'){input.disabled=false;submit.disabled=false} if(!submit.disabled) input.focus();}
   });
 
-  fetch('/api/session',{credentials:'same-origin',headers:{'Accept':'application/json'}})
-    .then(r=>r.ok?r.json():null).then(data=>{if(data&&data.authenticated)window.location.replace('/app')}).catch(()=>{});
 })();
 </script>
 </body>
